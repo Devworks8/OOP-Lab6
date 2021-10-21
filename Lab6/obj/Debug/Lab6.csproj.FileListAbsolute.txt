@@ -1,0 +1,7 @@
+D:\Repository\CSharp\GitRepo\OOP-Lab6\Lab6\bin\Debug\Lab6.exe.config
+D:\Repository\CSharp\GitRepo\OOP-Lab6\Lab6\bin\Debug\Lab6.exe
+D:\Repository\CSharp\GitRepo\OOP-Lab6\Lab6\bin\Debug\Lab6.pdb
+D:\Repository\CSharp\GitRepo\OOP-Lab6\Lab6\obj\Debug\Lab6.csproj.AssemblyReference.cache
+D:\Repository\CSharp\GitRepo\OOP-Lab6\Lab6\obj\Debug\Lab6.csproj.CoreCompileInputs.cache
+D:\Repository\CSharp\GitRepo\OOP-Lab6\Lab6\obj\Debug\Lab6.exe
+D:\Repository\CSharp\GitRepo\OOP-Lab6\Lab6\obj\Debug\Lab6.pdb
