@@ -27,8 +27,9 @@ namespace Psim
 
 			// Test the AddSensor, AddCell and SetSurfaces implementations. 
 
-			Model model = new Model(silicon, 310, 290, 10);
+			Model model = new Model(silicon, 3100, 90, 10);
 			Sensor s = new Sensor(1, silicon, 300);
+			
 			int numCells = 10;
 			for (int i = 0; i < numCells; ++i)
 			{
@@ -36,15 +37,42 @@ namespace Psim
 				model.AddCell(10, 10, i);
 			}
 
+			Console.Clear();
+			// Display cell surface information before setting surfaces
+			Console.WriteLine("\t\tSurface Allocations before setting surfaces\n");
+			PrintSurfaceAllocations(model);
+
 			model.SetSurfaces(300);
 			model.SetEmitPhonons(300, 1, 5e-9);
 
+            // Display general sensor and cell information
+			Console.WriteLine("\n\n" + model);
+
+			// Display cell surface information after setting surfaces
+			Console.WriteLine("\t\tSurface Allocations after setting surfaces\n");
+			PrintSurfaceAllocations(model);
+
+			// Display the addition of a sensor and cell with revised surfaces
+			model.AddSensor(model.sensors.Count, 310);
+			model.AddCell(10, 10, model.cells.Count);
+			model.SetSurfaces(300);
+
+            Console.WriteLine("\n\n\t\tAddition of sensor/cell and updated surfaces\n");
             Console.WriteLine(model);
+			PrintSurfaceAllocations(model);
+			
+			Console.ReadKey(true);
+		}
 
-			//figure out a way to print out the surfaces in a cell
-			// do this before nad after the setsurface method is called
-			// test the addsensor, addcell and setsurfaces implementations
+		private static void PrintSurfaceAllocations(Model model)
+        {
+			Console.Write(String.Format("{0, -5} {1, 25} {2, 40}\n\n", "Cell", "Left Surface", "Right Surface"));
 
+			int cellNum = 1;
+			foreach (Cell cell in model.cells)
+			{
+				Console.Write(String.Format("{0, -5} {1, -40} {2, -50}\n", cellNum++, cell.GetSurface(SurfaceLocation.left), cell.GetSurface(SurfaceLocation.right)));
+			}
 		}
 	}
 }

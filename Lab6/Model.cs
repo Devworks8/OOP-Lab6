@@ -21,8 +21,13 @@ namespace Psim
 		private const double TIME_STEP = 5e-12;
 		private const int NUM_PHONONS = 10000000;
 		private Material material;
+#if DEBUG
+		public List<Cell> cells = new List<Cell>() { };
+		public List<Sensor> sensors = new List<Sensor>() { };
+#else
 		private List<Cell> cells = new List<Cell>() { };
 		private List<Sensor> sensors = new List<Sensor>() { };
+#endif
 		private readonly double highTemp;
 		private readonly double lowTemp;
 		private readonly double simTime;
@@ -73,7 +78,11 @@ namespace Psim
 		/// Should be called after all the cells have been added
 		/// </summary>
 		/// <param name="tEq">The equilibrium temperature of the system</param>
+#if DEBUG
 		public void SetSurfaces(double tEq)
+#else
+		private void SetSurfaces(double tEq)
+#endif
 		{
 			// TODO: Implemenent -> Assume that the system is linear!!
 			int numCells = cells.Count;
@@ -81,30 +90,21 @@ namespace Psim
 			{
 				throw new InvalidCellCount($"{numCells}");
 			}
-			// Continue with implementation
+			
+			// Assign surfaces to the first cell
+			cells[0].SetEmitSurface(SurfaceLocation.left, highTemp);
+			cells[0].SetTransitionSurface(SurfaceLocation.right, cells[1]);
+			
+			// Assign surfaces to the last cell
+			cells[cells.Count - 1].SetEmitSurface(SurfaceLocation.right, lowTemp);
+			cells[cells.Count - 1].SetTransitionSurface(SurfaceLocation.left, cells[cells.Count - 2]);
 
-			int count = 0;
-			foreach(var cell in cells)
+            for (int cell = 1; cell < cells.Count - 1; ++cell)
             {
-				if (count == 0)
-				{
-					cell.SetEmitSurface(SurfaceLocation.left, highTemp);
-					cell.SetTransitionSurface(SurfaceLocation.right, cells[count+1]);
-				}
-				else if(count == cells.Count)
-                {
-					cell.SetEmitSurface(SurfaceLocation.right, lowTemp);
-					cell.SetTransitionSurface(SurfaceLocation.left, cells[count-1]);
-                }
-                else
-                {
-					cell.SetTransitionSurface(SurfaceLocation.left, cells[count-1]);
-					cell.SetTransitionSurface(SurfaceLocation.right, cells[count+1]);
-                }
-
-				count++;
+                cells[cell].SetTransitionSurface(SurfaceLocation.left, cells[cell - 1]);
+                cells[cell].SetTransitionSurface(SurfaceLocation.right, cells[cell + 1]);
             }
-		}
+        }
 
 		/// <summary>
 		/// Calibrates the emitting surfaces in the model.
@@ -112,7 +112,11 @@ namespace Psim
 		/// <param name="tEq">System equilibrium temperature</param>
 		/// <param name="effEnergy">Phonon packet effective energy</param>
 		/// <param name="timeStep">Simulation time step</param>
+#if DEBUG
 		public void SetEmitPhonons(double tEq, double effEnergy, double timeStep)
+#else
+		private void SetEmitPhonons(double tEq, double effEnergy, double timeStep)
+#endif
 		{
 			// TODO: Implement -> just need to call the appropriate method in each cell
 			foreach(var cell in cells)
@@ -137,5 +141,17 @@ namespace Psim
 
 			return emitEngergy;
 		}
-	}
+
+        public override string ToString()
+        {
+			string output = $"Model total energy: {GetTotalEnergy()}\n";
+
+			foreach(Cell cell in cells)
+            {
+				output += string.Format("{0} {1}\n", cell.ToString(), cell.EmitEnergy(tEq, simTime));
+            }
+
+			return output;
+		}
+    }
 }

@@ -36,6 +36,7 @@ namespace Psim.ModelComponents
 		public List<Phonon> Phonons { get { return phonons; } }
 		private Sensor sensor;
 
+
 		public Cell(double length, double width, Sensor sensor) : base(length, width)
 		{
 			this.sensor = sensor;
